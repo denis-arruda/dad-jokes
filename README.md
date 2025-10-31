@@ -1,3 +1,3 @@
-Spring AI Introduction: Building AI Applications in Java with Spring
+Spring AI Demo: Building AI Applications in Java with Spring
 
-https://youtu.be/yyvjT0v3lpY?si=Ymaux3bB4qw14iqF
+https://www.youtube.com/playlist?list=PLZV0a2jwt22uoDm3LNDFvN6i2cAVU_HTH
