@@ -1,1 +1,17 @@
 http://localhost:8080/dad-jokes
+
+
+###
+
+http://localhost:8080/jokes?message=universe
+
+
+
+###
+
+http://localhost:8080/youtube/popular
+
+
+###
+
+http://localhost:8080/youtube/music
