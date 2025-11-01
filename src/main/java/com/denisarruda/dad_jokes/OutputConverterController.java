@@ -6,30 +6,29 @@ import java.util.Map;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.prompt.Prompt;
 import org.springframework.ai.chat.prompt.PromptTemplate;
+import org.springframework.ai.converter.BeanOutputConverter;
 import org.springframework.ai.converter.ListOutputConverter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.convert.support.DefaultConversionService;
 import org.springframework.core.io.Resource;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.GetMapping;
 
 
 @RestController
-@RequestMapping("/youtube")
-public class YouTubeController {
+public class OutputConverterController {
 
     private final ChatClient chatClient;
 
     @Value("classpath:prompts/music.st")
     private Resource musicPrompt;
 
-    public YouTubeController(ChatClient.Builder chatClientBuilder) {
+    public OutputConverterController(ChatClient.Builder chatClientBuilder) {
         this.chatClient = chatClientBuilder.build();
     }
     
-    @GetMapping("popular")   
+    @GetMapping("/youtube")   
     public String findPopularYoutubersByGenre(@RequestParam(value = "genre", defaultValue = "tech") String genre) {
         String message = """
                 List 10 of most popular YouTubers in {genre} along with their subscriber counts. If you don't know the 
@@ -46,5 +45,19 @@ public class YouTubeController {
         PromptTemplate promptTemplate = new PromptTemplate(musicPrompt);
         Prompt prompt = promptTemplate.create(Map.of("genre", genre, "format", listOutputConverter.getFormat()));
         return listOutputConverter.convert(chatClient.prompt(prompt).call().content());
+    }
+    
+    @GetMapping("books")
+    public Author getBooksByAuthor(@RequestParam(value = "author", defaultValue = "Ken Kousen") String author) {
+        String message = """
+                Generate a list of books written by the author {author}. If you aren't positive that a book
+                belongs to this author don't include it.
+                {format}
+                """;
+        var outputConverter = new BeanOutputConverter<>(Author.class);
+        PromptTemplate promptTemplate = new PromptTemplate(message);
+        Prompt prompt = promptTemplate.create(Map.of("author", author, "format", outputConverter.getFormat()));
+        String response = chatClient.prompt(prompt).call().content();
+        return outputConverter.convert(response);
     }
 }
